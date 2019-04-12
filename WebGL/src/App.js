@@ -62,23 +62,20 @@ export default class App extends Component {
       var bladeWidth = [];
       var bladeHeight = [];
 
-      var keyArr = Object.keys(jsonData);
+      var keyArr = Object.keys(jsonData.impeller);
   
       keyArr.forEach(key => {
-        if (key.indexOf("impeller") > -1) {
-          var idx = parseInt(key.substring(8));
-          hubRadius[idx] = jsonData[key].hub.radius;
-          hubHeight[idx] = jsonData[key].hub.top
-          diskRadius[idx] = jsonData[key].disk.radius;
-          diskHeight[idx] = jsonData[key].disk.top;
-          bladeCount[idx] = jsonData[key].numBlades;
-          bladeInnerRadius[idx] = jsonData[key].blades.innerRadius;
-          bladeOuterRadius[idx] = jsonData[key].blades.outerRadius;
-          bladeWidth[idx] = jsonData[key].blades.bladeThickness;
-          bladeHeight[idx] = jsonData[key].blades.top;
-        }
+        hubRadius[key] = jsonData.impeller[key].hub.radius;
+        hubHeight[key] = jsonData.impeller[key].hub.top
+        diskRadius[key] = jsonData.impeller[key].disk.radius;
+        diskHeight[key] = jsonData.impeller[key].disk.top;
+        bladeCount[key] = jsonData.impeller[key].numBlades;
+        bladeInnerRadius[key] = jsonData.impeller[key].blades.innerRadius;
+        bladeOuterRadius[key] = jsonData.impeller[key].blades.outerRadius;
+        bladeWidth[key] = jsonData.impeller[key].blades.bladeThickness;
+        bladeHeight[key] = jsonData.impeller[key].blades.top;
       });
-      var impeller0 = jsonData.impeller0;
+ 
       var importJsonData = {
         tankDiameter: jsonData.tankDiameter,
         tankHeight: jsonData.gridx,
@@ -99,7 +96,6 @@ export default class App extends Component {
         bladeWidth: bladeWidth,
         bladeHeight: bladeHeight,
       };
-      console.log(importJsonData);
       Object.keys(importJsonData).forEach(key => {
         this.setState({ [key]: importJsonData[key] });
       });
@@ -195,9 +191,11 @@ export default class App extends Component {
       }
     };
 
+    var impeller = {};
     for (let i = 0; i < this.state.impellerCount; i++) {
-      var keyStr = "impeller"+i;
-      exportJsonData[keyStr] = {
+      var keyStr = i;
+
+      impeller[keyStr] = {
         numBlades: this.state.bladeCount[i],
         firstBladeOffset: 0,
         uav: "0.100000001",
@@ -222,6 +220,8 @@ export default class App extends Component {
         }
       }
     }
+
+    exportJsonData["impeller"] = impeller;
 
     jQuery("<a />", {
       "download": "data.json",
@@ -278,7 +278,7 @@ export default class App extends Component {
           </Layout>
           <Sider width={320} style={{ overflowY: 'auto' }}>
             <div className="logo"></div>
-            <Menu theme="dark" mode="inline">
+            <Menu theme="dark" mode="inline" defaultOpenKeys={['tank', 'setting']}>
               <Menu.SubMenu className="subMenu" key="tank" title={
                 <span>
                   <Icon type={this.state.hoverObject === 'tank' ? 'environment' : 'mail'} />
@@ -440,7 +440,7 @@ export default class App extends Component {
               <Menu.SubMenu className="translucent subMenu" key="translucent" title={
                 <span>
                   <Icon type={this.state.hoverObject === 'translucent' ? 'environment' : 'mail'} />
-                  <span style={{fontWeight: this.state.hoverObject === 'translucent' ? 'bold' : 'normal'}}>Translucent</span>
+                  <span style={{fontWeight: this.state.hoverObject === 'translucent' ? 'bold' : 'normal'}}>Output Plane</span>
                 </span>
               }>
                 <Menu.Item className="testClass" key="menuitem15">

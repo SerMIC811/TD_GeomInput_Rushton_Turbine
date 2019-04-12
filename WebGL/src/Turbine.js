@@ -71,6 +71,10 @@ class Turbine extends Component {
     // this.controls = new TrackballControls(this.camera, this.refs.painter);
     this.controls = new OrbitControls(this.camera);
 
+    this.controls.noZoom = true;
+    //this.controls.noRotate = true;
+    //this.controls.noKeys  = true;
+    //this.controls.noPan  = true;
     this.controls.rotateSpeed = 1.0;
     this.controls.zoomSpeed = 1.2;
     this.controls.panSpeed = 0.8;
@@ -206,9 +210,13 @@ class Turbine extends Component {
       this.changeTransEnable("XZ", nextProps.transEnableXZ);
 
     if (!_.isEqual(nextProps, this.props)) {
+      
       this.updatePlane(nextProps);
       this.updateTank(nextProps);
       this.updateShaft(nextProps);
+
+      console.log(this.props.tankDiameter);
+      this.updateTransPan(this.props.tankDiameter, this.props.tankHeight);
 
       // this.updateDisk(nextProps.diskRadius, nextProps.diskHeight);
       // this.updateHub(nextProps.hubRadius, nextProps.hubHeight);
@@ -463,9 +471,16 @@ class Turbine extends Component {
     this.transPanMeshXY = this.createTranslucentPan([d * 1.1, h * 1.1, thickness]);
     this.transPanMeshYZ = this.createTranslucentPan([thickness, h * 1.1, d * 1.1]);
     this.transPanMeshXZ = this.createTranslucentPan([d * 1.1, thickness, d * 1.1]);
+
     this.scene.add(this.transPanMeshXY);
     this.scene.add(this.transPanMeshYZ);
     this.scene.add(this.transPanMeshXZ);
+  }
+
+  updateTransPan(d, h) {
+    this.updateTranslucentPan(this.transPanMeshXY, [d * 1.1, h * 1.1, 2]);
+    this.updateTranslucentPan(this.transPanMeshYZ, [2, h * 1.1, d * 1.1]);
+    this.updateTranslucentPan(this.transPanMeshXZ, [d * 1.1, 2, d * 1.1]);
   }
 
   createTranslucentPan(sizeArr) {
@@ -480,6 +495,10 @@ class Turbine extends Component {
     panMesh.name = "transPan";
     panMesh.visible = false;
     return panMesh;
+  }
+
+  updateTranslucentPan(mesh, sizeArr) {
+    mesh.scale.set(sizeArr[0] / mesh.geometry.parameters.width, sizeArr[1] / mesh.geometry.parameters.height, sizeArr[2] / mesh.geometry.parameters.depth);
   }
 
   changeBladeCount(newValue, oldValue, num) {
@@ -626,6 +645,7 @@ class Turbine extends Component {
   }
 
   changeTransEnable (type, value) {
+
     if (type === "XY") 
       this.transEnableXY = value;
     else if (type === "YZ")
