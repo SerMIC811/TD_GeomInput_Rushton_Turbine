@@ -212,6 +212,8 @@ class Turbine extends Component {
       this.changeTransEnable("XZ", nextProps.transEnableXZ);
     else if (nextProps.transEnableImpeller !== this.props.transEnableImpeller)
       this.changeTransEnable("Impeller", nextProps.transEnableImpeller);
+      else if (nextProps.transEnableRotate !== this.props.transEnableRotate)
+      this.changeTransEnable("Rotate", nextProps.transEnableRotate);
 
     if (!_.isEqual(nextProps, this.props)) {
       
@@ -493,16 +495,20 @@ class Turbine extends Component {
     this.transPanMeshXY = this.createTranslucentPan([d * 1.1, h * 1.1, thickness]);
     this.transPanMeshYZ = this.createTranslucentPan([thickness, h * 1.1, d * 1.1]);
     this.transPanMeshXZ = this.createTranslucentPan([d * 1.1, thickness, d * 1.1]);
+    this.transPanMeshCenter = this.createTranslucentPan([d / 2, h, thickness]);
 
     this.scene.add(this.transPanMeshXY);
     this.scene.add(this.transPanMeshYZ);
     this.scene.add(this.transPanMeshXZ);
+    this.transPanMeshCenter.position.x = d / 4;
+    this.scene.add(this.transPanMeshCenter);
   }
 
   updateTransPan(d, h) {
     this.updateTranslucentPan(this.transPanMeshXY, [d * 1.1, h * 1.1, 2]);
     this.updateTranslucentPan(this.transPanMeshYZ, [2, h * 1.1, d * 1.1]);
     this.updateTranslucentPan(this.transPanMeshXZ, [d * 1.1, 2, d * 1.1]);
+    this.updateTranslucentPan(this.transPanMeshCenter, [d / 2, h, 2]);
   }
 
   createTranslucentPan(sizeArr) {
@@ -571,6 +577,9 @@ class Turbine extends Component {
       this.blades[num][j].position.add(offset);
       this.blades[num][j].rotation.set(0, angle, 0);
       this.diskTrans[num].rotation.set(0, angle, 0);
+      this.transPanMeshCenter.position.set(this.props.tankDiameter / 4, 0, 0);
+      this.transPanMeshCenter.position.applyAxisAngle(yAxis, angle);
+      this.transPanMeshCenter.rotation.set(0, angle, 0);
     }
   }
 
@@ -681,10 +690,13 @@ class Turbine extends Component {
       this.transEnableXZ = value;
     else if (type === "Impeller")
       this.transEnableImpeller = value;
+    else if (type === "Rotate")
+      this.transEnableRotate = value;
     
     this.transPanMeshXY.visible = this.transEnableXY;
     this.transPanMeshYZ.visible = this.transEnableYZ;
     this.transPanMeshXZ.visible = this.transEnableXZ;
+    this.transPanMeshCenter.visible = this.transEnableRotate;
     for (var i = 0; i < this.diskTrans.length; i++)
       this.diskTrans[i].visible = this.transEnableImpeller;
   }
@@ -753,6 +765,7 @@ Turbine.propTypes = {
   transEnableYZ: PropTypes.bool,
   transEnableXZ: PropTypes.bool,
   transEnableImpeller: PropTypes.bool,
+  transEnableRotate: PropTypes.bool,
   baffleWidth: PropTypes.number.isRequired,
   onHoverObject: PropTypes.func
 };
