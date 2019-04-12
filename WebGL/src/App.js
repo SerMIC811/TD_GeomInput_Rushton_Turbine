@@ -444,24 +444,20 @@ export default class App extends Component {
                 </span>
               }>
                 <Menu.Item className="testClass" key="menuitem15">
-                  <span className="trans-pan">XY Side Enable</span>
+                  <span className="trans-pan">XY Plane</span>
                   <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableXY', value)}></Checkbox>
                   <InputNumber size="small" min={this.state.tankDiameter * -0.5} max={this.state.tankDiameter * 0.5} defaultValue={this.state.transPanXY} onChange={(value) => this.handleChange('transPanXY', value)} />
                 </Menu.Item>
                 <Menu.Item key="menuitem16">
-                  <span className="trans-pan">YZ Side Enable</span>
+                  <span className="trans-pan">YZ Plane</span>
                   <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableYZ', value)}></Checkbox>
                   <InputNumber size="small" min={this.state.tankDiameter * -0.5} max={this.state.tankDiameter * 0.5} defaultValue={this.state.transPanYZ} onChange={(value) => this.handleChange('transPanYZ', value)} />
                 </Menu.Item>
                 <Menu.Item key="menuitem17">
-                  <span className="trans-pan">XZ Side Enable</span>
+                  <span className="trans-pan">XZ Plane</span>
                   <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableXZ', value)}></Checkbox>
                   <InputNumber size="small" min={this.state.tankHeight * -0.5} max={this.state.tankHeight * 0.5} defaultValue={this.state.transPanXZ} onChange={(value) => this.handleChange('transPanXZ', value)} />
                 </Menu.Item>
-                <Menu.SubMenu key="menuitem18" title="test subMenu">
-                  <Menu.Item key="menuitem19">xx</Menu.Item>
-                  <Menu.Item key="menuitem20">yy</Menu.Item>
-                </Menu.SubMenu>
               </Menu.SubMenu>
             </Menu>
           </Sider>
