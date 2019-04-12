@@ -116,6 +116,7 @@ class Turbine extends Component {
     this.transEnableXY = false;
     this.transEnableYZ = false;
     this.transEnableXZ = false;
+    this.transEnableImpeller = false;
 
     this.createAxis(this.props.tankDiameter, this.props.tankHeight);
 
@@ -125,6 +126,7 @@ class Turbine extends Component {
     this.blades = [];
     this.hubs = [];
     this.disks = [];
+    this.diskTrans = [];
     var impellerCount = this.props.impellerCount;
     for (let i = 0; i < impellerCount; i++) {
       this.blades[i] = [];
@@ -208,6 +210,8 @@ class Turbine extends Component {
       this.changeTransEnable("YZ", nextProps.transEnableYZ);
     else if (nextProps.transEnableXZ !== this.props.transEnableXZ)
       this.changeTransEnable("XZ", nextProps.transEnableXZ);
+    else if (nextProps.transEnableImpeller !== this.props.transEnableImpeller)
+      this.changeTransEnable("Impeller", nextProps.transEnableImpeller);
 
     if (!_.isEqual(nextProps, this.props)) {
       
@@ -215,7 +219,6 @@ class Turbine extends Component {
       this.updateTank(nextProps);
       this.updateShaft(nextProps);
 
-      console.log(this.props.tankDiameter);
       this.updateTransPan(this.props.tankDiameter, this.props.tankHeight);
 
       // this.updateDisk(nextProps.diskRadius, nextProps.diskHeight);
@@ -420,14 +423,33 @@ class Turbine extends Component {
     diskMesh.position.y = this.setImpellerPositionY(num, count);
     diskMesh.name = "disk" + num;
     diskMesh.originalColor = metalColor;
+
+    var panGeo = new THREE.BoxGeometry(2 * radius + 50, 2, 2 * radius + 50);
+    var panMat = new THREE.MeshPhongMaterial({
+      color : 0x0000FF,
+      side: THREE.DoubleSide,
+      transparent : true,
+      opacity : 0.8
+    });
+    var panMesh = new THREE.Mesh(panGeo, panMat);
+    panMesh.position.y = this.setImpellerPositionY(num, count);
+    panMesh.name = "diskPan" + num;
+    panMesh.visible = this.transEnableImpeller;
+
     this.disks.push(diskMesh);
     this.scene.add(diskMesh);
+    this.diskTrans.push(panMesh);
+    this.scene.add(panMesh);
   }
 
   updateDisk(radius, height, num) {
     var diskGeo = this.createDiskGeometry(radius, height);
     delete this.disks[num].geometry;
     this.disks[num].geometry = diskGeo;
+
+    var panGeo = new THREE.BoxGeometry(2 * radius + 50, 2, 2 * radius + 50);
+    delete this.diskTrans[num].geometry;
+    this.diskTrans[num].geometry = panGeo;
   }
 
   createHubGeometry(hubRadius, hubHeight) {
@@ -548,6 +570,7 @@ class Turbine extends Component {
       this.blades[num][j].position.applyAxisAngle(yAxis, angle);
       this.blades[num][j].position.add(offset);
       this.blades[num][j].rotation.set(0, angle, 0);
+      this.diskTrans[num].rotation.set(0, angle, 0);
     }
   }
 
@@ -563,12 +586,15 @@ class Turbine extends Component {
           posY = this.setImpellerPositionY(i, newValue);
           this.hubs[i].position.y = posY;
           this.disks[i].position.y = posY;
+          this.diskTrans[i].position.y = posY;
         }
         else {
           this.scene.remove(this.hubs[i]);
           this.hubs.pop();
           this.scene.remove(this.disks[i]);
           this.disks.pop();
+          this.scene.remove(this.diskTrans[i]);
+          this.diskTrans.pop();
           for (var j = this.props.bladeCount[i] - 1; j >= 0; j--) {
             this.scene.remove(this.blades[i][j]);
             // this.blades[i].pop();
@@ -586,6 +612,7 @@ class Turbine extends Component {
         if (i < oldValue) {
           this.hubs[i].position.y = posY;
           this.disks[i].position.y = posY;
+          this.diskTrans[i].position.y = posY;
           for (let j = 0; j < this.props.bladeCount; j++) {
             this.blades[i][j].position.y = posY;
           }
@@ -652,9 +679,14 @@ class Turbine extends Component {
       this.transEnableYZ = value;
     else if (type === "XZ")
       this.transEnableXZ = value;
+    else if (type === "Impeller")
+      this.transEnableImpeller = value;
+    
     this.transPanMeshXY.visible = this.transEnableXY;
     this.transPanMeshYZ.visible = this.transEnableYZ;
     this.transPanMeshXZ.visible = this.transEnableXZ;
+    for (var i = 0; i < this.diskTrans.length; i++)
+      this.diskTrans[i].visible = this.transEnableImpeller;
   }
 
   updateBaffles(props) {
@@ -720,6 +752,7 @@ Turbine.propTypes = {
   transEnableXY: PropTypes.bool,
   transEnableYZ: PropTypes.bool,
   transEnableXZ: PropTypes.bool,
+  transEnableImpeller: PropTypes.bool,
   baffleWidth: PropTypes.number.isRequired,
   onHoverObject: PropTypes.func
 };

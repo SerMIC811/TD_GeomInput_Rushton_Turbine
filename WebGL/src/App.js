@@ -43,6 +43,7 @@ export default class App extends Component {
       transEnableXY: false,
       transEnableYZ: false,
       transEnableXZ: false,
+      transEnableImpeller: false,
       hoverObject: '',
       setting:''
     };
@@ -271,6 +272,7 @@ export default class App extends Component {
                 transEnableXY={this.state.transEnableXY}
                 transEnableYZ={this.state.transEnableYZ}
                 transEnableXZ={this.state.transEnableXZ}
+                transEnableImpeller={this.state.transEnableImpeller}
                 onHoverObject={name => this.handleHoverObject(name)}
                 setting={this.state.setting}
               />
@@ -457,6 +459,10 @@ export default class App extends Component {
                   <span className="trans-pan">XZ Plane</span>
                   <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableXZ', value)}></Checkbox>
                   <InputNumber size="small" min={this.state.tankHeight * -0.5} max={this.state.tankHeight * 0.5} defaultValue={this.state.transPanXZ} onChange={(value) => this.handleChange('transPanXZ', value)} />
+                </Menu.Item>
+                <Menu.Item key="menuitem18">
+                  <span className="trans-pan">Impeller Plane</span>
+                  <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableImpeller', value)}></Checkbox>
                 </Menu.Item>
               </Menu.SubMenu>
             </Menu>
