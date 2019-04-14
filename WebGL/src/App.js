@@ -40,6 +40,7 @@ export default class App extends Component {
       transPanXY: 0,
       transPanYZ: 0,
       transPanXZ: 0,
+      transRotateAngle: 0,
       transEnableXY: false,
       transEnableYZ: false,
       transEnableXZ: false,
@@ -270,6 +271,7 @@ export default class App extends Component {
                 transPanXY={this.state.transPanXY}
                 transPanYZ={this.state.transPanYZ}
                 transPanXZ={this.state.transPanXZ}
+                transRotateAngle={this.state.transRotateAngle}
                 transEnableXY={this.state.transEnableXY}
                 transEnableYZ={this.state.transEnableYZ}
                 transEnableXZ={this.state.transEnableXZ}
@@ -282,7 +284,26 @@ export default class App extends Component {
           </Layout>
           <Sider width={320} style={{ overflowY: 'auto' }}>
             <div className="logo"></div>
-            <Menu theme="dark" mode="inline" defaultOpenKeys={['tank', 'setting']}>
+            <Menu theme="dark" mode="inline" defaultOpenKeys={['setting']}>
+              <Menu.SubMenu className="setting subMenu" key="setting" title={
+                <span>
+                  <Icon type={this.state.hoverObject === 'setting' ? 'environment' : 'mail'} />
+                  <span style={{
+                    fontWeight: this.state.hoverObject === 'setting' ? 'bold' : 'normal'
+                  }}>Setting</span>
+                </span>
+              }>
+                <div className="setting-item">
+                  <button onClick={ev => {this.handleSetting("reset")}}>Reset Camera</button>
+                </div>
+                <div><input id="fileInput" ref="fileInput" type="file" onChange={ (e) => this.handleFile(e.target.files[0]) } /></div>
+                <div className="setting-item">
+                  <button onClick={this.handleFileSelect}>Load Json</button>
+                </div>
+                <div className="setting-item">
+                  <button onClick={this.exportJsonFile.bind(this)}>Save Json</button>
+                </div>
+              </Menu.SubMenu>
               <Menu.SubMenu className="subMenu" key="tank" title={
                 <span>
                   <Icon type={this.state.hoverObject === 'tank' ? 'environment' : 'mail'} />
@@ -420,27 +441,6 @@ export default class App extends Component {
                   </Radio.Group>
                 </Menu.Item>
               </Menu.SubMenu>
-
-
-              <Menu.SubMenu className="setting subMenu" key="setting" title={
-                <span>
-                  <Icon type={this.state.hoverObject === 'setting' ? 'environment' : 'mail'} />
-                  <span style={{
-                    fontWeight: this.state.hoverObject === 'setting' ? 'bold' : 'normal'
-                  }}>Setting</span>
-                </span>
-              }>
-                <div className="setting-item">
-                  <button onClick={ev => {this.handleSetting("reset")}}>Reset Camera</button>
-                </div>
-                <div><input id="fileInput" ref="fileInput" type="file" onChange={ (e) => this.handleFile(e.target.files[0]) } /></div>
-                <div className="setting-item">
-                  <button onClick={this.handleFileSelect}>Load Json</button>
-                </div>
-                <div className="setting-item">
-                  <button onClick={this.exportJsonFile.bind(this)}>Save Json</button>
-                </div>
-              </Menu.SubMenu>
               <Menu.SubMenu className="translucent subMenu" key="translucent" title={
                 <span>
                   <Icon type={this.state.hoverObject === 'translucent' ? 'environment' : 'mail'} />
@@ -463,12 +463,13 @@ export default class App extends Component {
                   <InputNumber size="small" min={this.state.tankHeight * -0.5} max={this.state.tankHeight * 0.5} defaultValue={this.state.transPanXZ} onChange={(value) => this.handleChange('transPanXZ', value)} />
                 </Menu.Item>
                 <Menu.Item key="menuitem18">
-                  <span className="trans-pan">Impeller Plane</span>
-                  <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableImpeller', value)}></Checkbox>
-                </Menu.Item>
-                <Menu.Item key="menuitem19">
                   <span className="trans-pan">Rotate Plane</span>
                   <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableRotate', value)}></Checkbox>
+                  <InputNumber size="small" min={0} max={360} defaultValue={this.state.transRotateAngle} onChange={(value) => this.handleChange('transRotateAngle', value)} />
+                </Menu.Item>
+                <Menu.Item key="menuitem19">
+                  <span className="trans-pan">Impeller Plane</span>
+                  <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableImpeller', value)}></Checkbox>
                 </Menu.Item>
               </Menu.SubMenu>
             </Menu>

@@ -203,6 +203,8 @@ class Turbine extends Component {
       this.changeTransPan("YZ", nextProps.transPanYZ);
     else if (nextProps.transPanXZ !== this.props.transPanXZ)
       this.changeTransPan("XZ", nextProps.transPanXZ);
+    else if (nextProps.transRotateAngle !== this.props.transRotateAngle)
+      this.changeTransPan("Angle", nextProps.transRotateAngle);
 
     if (nextProps.transEnableXY !== this.props.transEnableXY)
       this.changeTransEnable("XY", nextProps.transEnableXY);
@@ -501,6 +503,7 @@ class Turbine extends Component {
     this.scene.add(this.transPanMeshYZ);
     this.scene.add(this.transPanMeshXZ);
     this.transPanMeshCenter.position.x = d / 4;
+
     this.scene.add(this.transPanMeshCenter);
   }
 
@@ -577,9 +580,12 @@ class Turbine extends Component {
       this.blades[num][j].position.add(offset);
       this.blades[num][j].rotation.set(0, angle, 0);
       this.diskTrans[num].rotation.set(0, angle, 0);
+
+      var angle1 = (360 * j / this.blades[num].length + this.kernelAngle + this.props.transRotateAngle) % 360;
+      angle1 = 2 * Math.PI * angle1 / 360;
       this.transPanMeshCenter.position.set(this.props.tankDiameter / 4, 0, 0);
-      this.transPanMeshCenter.position.applyAxisAngle(yAxis, angle);
-      this.transPanMeshCenter.rotation.set(0, angle, 0);
+      this.transPanMeshCenter.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), angle1);
+      this.transPanMeshCenter.rotation.set(0, angle1, 0);
     }
   }
 
@@ -678,6 +684,9 @@ class Turbine extends Component {
     else if (type === "XZ") {
       this.transPanMeshXZ.position.y = value;
     }
+    else if (type === "Angle") {
+      this.transRotateAngle = value;
+    }
   }
 
   changeTransEnable (type, value) {
@@ -761,6 +770,7 @@ Turbine.propTypes = {
   transPanXY: PropTypes.number.isRequired,
   transPanYZ: PropTypes.number.isRequired,
   transPanXZ: PropTypes.number.isRequired,
+  transRotateAngle: PropTypes.number.isRequired,
   transEnableXY: PropTypes.bool,
   transEnableYZ: PropTypes.bool,
   transEnableXZ: PropTypes.bool,
