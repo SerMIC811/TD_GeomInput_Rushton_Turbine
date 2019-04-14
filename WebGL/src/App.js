@@ -467,10 +467,10 @@ export default class App extends Component {
                   <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableRotate', value)}></Checkbox>
                   <InputNumber size="small" min={0} max={360} defaultValue={this.state.transRotateAngle} onChange={(value) => this.handleChange('transRotateAngle', value)} />
                 </Menu.Item>
-                <Menu.Item key="menuitem19">
+                {/* <Menu.Item key="menuitem19">
                   <span className="trans-pan">Impeller Plane</span>
                   <Checkbox className="transCheck" onChange={(value) => this.handleTransEnable('transEnableImpeller', value)}></Checkbox>
-                </Menu.Item>
+                </Menu.Item> */}
               </Menu.SubMenu>
             </Menu>
           </Sider>
